@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arya Chavan | Data Science & AI Portfolio</title>
+    
+    <!-- Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js for Dynamic Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070913;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(255, 255, 255, 0.1);
+            
+            /* Vibrant Data Palette */
+            --neon-cyan: #00f2fe;
+            --neon-blue: #4facfe;
+            --neon-purple: #7f00ff;
+            --neon-magenta: #e100ff;
+            --neon-green: #00ff87;
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Interactive Particle Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        code, .tech-tag {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Glassmorphism Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 8%;
+            background: rgba(7, 9, 19, 0.75);
+            backdrop-filter: blur(16px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* Hero Section */
+        header {
+            min-height: 100vh;
+            padding: 140px 8% 60px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple), var(--neon-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.9rem 1.8rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 242, 254, 0.5);
+        }
+
+        .btn-outline {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--neon-magenta);
+            color: var(--neon-magenta);
+            transform: translateY(-3px);
+        }
+
+        /* Interactive Dashboard Widget */
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .chart-btn.active, .chart-btn:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            font-weight: 700;
+        }
+
+        /* Section Styling */
+        section {
+            padding: 100px 8%;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Interactive Project Cards & Filtering */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+            color: #000;
+            border-color: transparent;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.15);
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .project-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tech-tag {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Skill Grid with Dynamic Hover */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .skill-card:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 10px 25px rgba(0, 255, 135, 0.15);
+        }
+
+        .skill-card h4 {
+            color: var(--neon-green);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            color: var(--text-muted);
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .skill-list i {
+            color: var(--neon-green);
+        }
+
+        /* Education & Certifications Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            border-left: 2px solid var(--card-border);
+            padding-left: 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.55rem;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--neon-magenta);
+            box-shadow: 0 0 12px var(--neon-magenta);
+        }
+
+        .timeline-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            border-radius: 14px;
+        }
+
+        .timeline-card h4 {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .timeline-card span {
+            color: var(--neon-magenta);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 8% 2rem;
+            background: rgba(7, 9, 19, 0.95);
+            border-top: 1px solid var(--card-border);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        @media (max-width: 900px) {
+            header {
+                grid-template-columns: 1fr;
+                padding-top: 120px;
+            }
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Data Network Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <i class="fa-solid fa-network-wired"></i> Arya Chavan
+        </div>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#certifications">Certifications</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero / Header Section -->
+    <header id="about">
+        <div class="hero-text">
+            <div class="badge"><i class="fa-solid fa-circle-dot"></i> Available for Data Science Projects</div>
+            <h1>Transforming Raw Data into <span class="gradient-text">Predictive Power</span></h1>
+            <p>B.Sc. Data Science student at Yashwantrao Chavan Institute of Science, Satara. Specialized in building Machine Learning models, Power BI dashboards, and Conversational AI agents.</p>
+            <div class="cta-buttons">
+                <a href="https://linkedin.com/in/arya-chavan-29608531a" target="_blank" class="btn btn-primary">
+                    <i class="fa-brands fa-linkedin"></i> Connect on LinkedIn
+                </a>
+                <a href="https://github.com/arya-chavan18" target="_blank" class="btn btn-outline">
+                    <i class="fa-brands fa-github"></i> GitHub Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- Interactive Live Model Performance Widget -->
+        <div class="dashboard-card">
+            <div class="dashboard-header">
+                <div>
+                    <h3 style="font-size: 1.1rem; color: #fff;">Model Evaluation Matrix</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Interactive performance visualization</p>
+                </div>
+                <div class="chart-controls">
+                    <button class="chart-btn active" onclick="updateChart('accuracy')">Accuracy</button>
+                    <button class="chart-btn" onclick="updateChart('loss')">Loss Trend</button>
+                </div>
+            </div>
+            <div style="position: relative; height:240px;">
+                <canvas id="heroChart"></canvas>
+            </div>
+        </div>
+    </header>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <div class="section-header">
+            <h2 class="section-title">Applied <span class="gradient-text">Data Science Projects</span></h2>
+            <p style="color: var(--text-muted);">Explore real-world applications across Machine Learning, Analytics, and AI.</p>
+        </div>
+
+        <!-- Project Filter Buttons -->
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterProjects('all')">All Projects</button>
+            <button class="filter-btn" onclick="filterProjects('ml')">Machine Learning</button>
+            <button class="filter-btn" onclick="filterProjects('ai')">Conversational AI</button>
+            <button class="filter-btn" onclick="filterProjects('bi')">Power BI & Analytics</button>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Project 1 -->
+            <div class="project-card" data-category="ai">
+                <div>
+                    <h3>AI Voice Admission Counselor</h3>
+                    <p>Built an AI voice agent leveraging ElevenLabs Conversational AI to guide prospective students and parents through admission criteria, fees, and competitive exam preparation.</p>
+                </div>
+                <div class="project-tags">
+                    <span class="tech-tag">ElevenLabs</span>
+                    <span class="tech-tag">Prompt Engineering</span>
+                    <span class="tech-tag">Conversational AI</span>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="project-card" data-category="ml">
+                <div>
+                    <h3>House Price Prediction Model</h3>
+                    <p>Designed a machine learning regression model to accurately forecast housing prices in Gurgaon utilizing Python, Scikit-learn, and optimized exploratory data pipelines.</p>
+                </div>
+                <div class="project-tags">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Scikit-learn</span>
+                    <span class="tech-tag">Pandas</span>
+                    <span class="tech-tag">Regression</span>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="project-card" data-category="bi">
+                <div>
+                    <h3>Mobile Sales Analytics Dashboard</h3>
+                    <p>Created an end-to-end interactive Power BI dashboard highlighting total revenue trends, city-wise sales distributions, payment dynamics, and brand ratings.</p>
+                </div>
+                <div class="project-tags">
+                    <span class="tech-tag">Power BI</span>
+                    <span class="tech-tag">Data Storytelling</span>
+                    <span class="tech-tag">Business Intelligence</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="section-header">
+            <h2 class="section-title">Technical <span class="gradient-text">Stack & Tools</span></h2>
+        </div>
+
+        <div class="skills-grid">
+            <div class="skill-card">
+                <h4><i class="fa-solid fa-code"></i> Programming & Analytics</h4>
+                <ul class="skill-list">
+                    <li><i class="fa-solid fa-square-check"></i> Python</li>
+                    <li><i class="fa-solid fa-square-check"></i> Pandas</li>
+                    <li><i class="fa-solid fa-square-check"></i> NumPy</li>
+                    <li><i class="fa-solid fa-square-check"></i> Scikit-learn</li>
+                </ul>
+            </div>
+
+            <div class="skill-card">
+                <h4><i class="fa-solid fa-chart-column"></i> Visualization & BI</h4>
+                <ul class="skill-list">
+                    <li><i class="fa-solid fa-square-check"></i> Power BI</li>
+                    <li><i class="fa-solid fa-square-check"></i> Microsoft Excel</li>
+                    <li><i class="fa-solid fa-square-check"></i> Business Intelligence</li>
+                    <li><i class="fa-solid fa-square-check"></i> Data Preprocessing</li>
+                </ul>
+            </div>
+
+            <div class="skill-card">
+                <h4><i class="fa-solid fa-brain"></i> AI & Machine Learning</h4>
+                <ul class="skill-list">
+                    <li><i class="fa-solid fa-square-check"></i> Regression Modeling</li>
+                    <li><i class="fa-solid fa-square-check"></i> Prompt Engineering</li>
+                    <li><i class="fa-solid fa-square-check"></i> ElevenLabs AI</li>
+                    <li><i class="fa-solid fa-square-check"></i> Conversational AI Design</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education & Certifications -->
+    <section id="certifications">
+        <div class="section-header">
+            <h2 class="section-title">Education & <span class="gradient-text">Certifications</span></h2>
+        </div>
+
+        <div class="timeline">
+            <!-- Education -->
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <h4>Bachelor of Science (B.Sc.) in Data Science</h4>
+                    <span>Yashwantrao Chavan Institute of Science, Satara • Third Year</span>
+                </div>
+            </div>
+
+            <!-- Certifications -->
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <h4>AI Foundations</h4>
+                    <span>OpenAI Academy (June 20, 2026)</span>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <h4>The Ultimate Job Ready Data Science Course</h4>
+                    <span>CodeWithHarry (April 25, 2026)</span>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <h4>Introduction to MS Excel</h4>
+                    <span>Simplilearn & Microsoft (March 3, 2026)</span>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <h4>Introduction to Data Science</h4>
+                    <span>Cisco Networking Academy</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <h3 style="margin-bottom: 0.5rem; color: #fff;">Arya Chavan</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Satara, Maharashtra, India</p>
+        
+        <div class="social-links">
+            <a href="https://linkedin.com/in/arya-chavan-29608531a" target="_blank" class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://github.com/arya-chavan18" target="_blank" class="social-icon"><i class="fa-brands fa-github"></i></a>
+        </div>
+        
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+            Built with Dynamic Interactive Canvas & Data Visualization Modules
+        </p>
+    </footer>
+
+    <!-- Interactive JavaScript -->
+    <script>
+        /* 1. Canvas Particle Data Graph Background */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const particles = [];
+        const particleCount = 65;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2 + 1,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8
+            });
+        }
+
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particleCount; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#00f2fe';
+                ctx.fill();
+
+                // Connect nearby particles
+                for (let j = i + 1; j < particleCount; j++) {
+                    let p2 = particles[j];
+                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = rgba(0, 242, 254, ${1 - dist / 120 * 0.8});
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        /* 2. Interactive Chart.js Dynamic Model Performance Chart */
+        const ctxChart = document.getElementById('heroChart').getContext('2d');
+        
+        const accuracyData = [68, 75, 82, 88, 93, 96];
+        const lossData = [0.85, 0.62, 0.41, 0.25, 0.15, 0.08];
+        const labels = ['Epoch 1', 'Epoch 2', 'Epoch 3', 'Epoch 4', 'Epoch 5', 'Epoch 6'];
+
+        let heroChart = new Chart(ctxChart, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Model Accuracy (%)',
+                    data: accuracyData,
+                    borderColor: '#00f2fe',
+                    backgroundColor: 'rgba(0, 242, 254, 0.15)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        function updateChart(type) {
+            const buttons = document.querySelectorAll('.chart-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            if (type === 'accuracy') {
+                event.target.classList.add('active');
+                heroChart.data.datasets[0].label = 'Model Accuracy (%)';
+                heroChart.data.datasets[0].data = accuracyData;
+                heroChart.data.datasets[0].borderColor = '#00f2fe';
+                heroChart.data.datasets[0].backgroundColor = 'rgba(0, 242, 254, 0.15)';
+            } else {
+                event.target.classList.add('active');
+                heroChart.data.datasets[0].label = 'Loss Trend';
+                heroChart.data.datasets[0].data = lossData;
+                heroChart.data.datasets[0].borderColor = '#e100ff';
+                heroChart.data.datasets[0].backgroundColor = 'rgba(225, 0, 255, 0.15)';
+            }
+            heroChart.update();
+        }
+
+        /* 3. Dynamic Interactive Category Filter */
+        function filterProjects(category) {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const projects = document.querySelectorAll('.project-card');
+            projects.forEach(project => {
+                if (category === 'all' || project.dataset.category === category) {
+                    project.style.display = 'flex';
+                } else {
+                    project.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
